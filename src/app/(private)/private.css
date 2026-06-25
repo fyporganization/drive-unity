@@ -1,0 +1,32 @@
+/* Private Area Design Tokens & Utilities */
+/* All styles scoped to the (private) layout area */
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted) / 0.5) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Private area specific overrides */
+.private-layout {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.private-layout h1,
+.private-layout h2,
+.private-layout h3,
+.private-layout h4,
+.private-layout h5,
+.private-layout h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}

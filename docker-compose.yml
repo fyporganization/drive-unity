@@ -1,0 +1,52 @@
+services:
+  app:
+    image: ${DOCKER_REPO}:${DOCKER_TAG}
+    container_name: drive-unity-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - "3000"
+    networks:
+      - treafik_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=treafik_network"
+
+      # HTTPS router — Traefik terminates TLS via Let's Encrypt
+      - "traefik.http.routers.drive-unity.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.drive-unity.entrypoints=websecure"
+      - "traefik.http.routers.drive-unity.tls=true"
+      - "traefik.http.routers.drive-unity.tls.certresolver=letsencrypt"
+      - "traefik.http.services.drive-unity.loadbalancer.server.port=3000"
+
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.drive-unity-http.rule=Host(`${APP_HOST}`)"
+      - "traefik.http.routers.drive-unity-http.entrypoints=web"
+      - "traefik.http.routers.drive-unity-http.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+
+  worker:
+    image: ${DOCKER_REPO}:${DOCKER_TAG}
+    container_name: drive-unity-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["node_modules/.bin/tsx", "worker/index.ts"]
+    networks:
+      - treafik_network
+    depends_on:
+      - app
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  treafik_network:
+    external: true

@@ -1,0 +1,140 @@
+name: Build & Deploy Drive-Unity
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # ─── Build the image, push to Docker Hub ──────────────────────────────────
+  build:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: meta
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push provider
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Two tags into the shared private repo (per-product distinguished by tag prefix):
+          #   <repo>:<product>           rolling — picked up by compose
+          #   <repo>:<product>-<sha>     immutable — for rollback
+          tags: |
+            ${{ vars.DOCKER_REPO }}:${{ vars.DOCKER_TAG }}
+            ${{ vars.DOCKER_REPO }}:${{ vars.DOCKER_TAG }}-${{ steps.meta.outputs.tag }}
+          # Only NEXT_PUBLIC_* belongs at build time — it lands in the client
+          # bundle. All other secrets are runtime, injected via env_file.
+          build-args: |
+            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+          # Per-product cache tag so multiple products in the same repo
+          # don't overwrite each other's layer cache.
+          cache-from: type=registry,ref=${{ vars.DOCKER_REPO }}:${{ vars.DOCKER_TAG }}-buildcache
+          cache-to: type=registry,ref=${{ vars.DOCKER_REPO }}:${{ vars.DOCKER_TAG }}-buildcache,mode=max
+
+  # ─── Deploy to VPS via SSH + docker-compose ───────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yml to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          source: "docker-compose.yml"
+          target: ${{ secrets.VPS_DEPLOY_PATH }}
+
+      - name: Write .env, pull image, restart stack
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          # All runtime envs sourced from GitHub secrets — never persisted on
+          # the server beyond the lifetime of this .env file.
+          # APP_HOST is a GitHub repo Variable (not secret) since it's public,
+          # consumed by docker-compose for Traefik Host() routing.
+          ENV_FILE_CONTENTS: |
+            APP_HOST=${{ vars.APP_HOST }}
+            DOCKER_REPO=${{ vars.DOCKER_REPO }}
+            DOCKER_TAG=${{ vars.DOCKER_TAG }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}
+            GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}
+            GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
+            GOOGLE_CERT_URL=${{ secrets.GOOGLE_CERT_URL }}
+            GOOGLE_JS_ORIGINS=${{ secrets.GOOGLE_JS_ORIGINS }}
+            GOOGLE_AUTH_REDIRECT_URI=${{ secrets.GOOGLE_AUTH_REDIRECT_URI }}
+            TEMPORAL_CLIENT=${{ secrets.TEMPORAL_CLIENT }}
+            TEMPORAL_NAMESPACE=${{ secrets.TEMPORAL_NAMESPACE }}
+            PYTHON_API_URL=${{ secrets.PYTHON_API_URL }}
+            TOKEN=${{ secrets.TOKEN }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}
+            BREVO_SENDER_EMAIL=${{ secrets.BREVO_SENDER_EMAIL }}
+            BREVO_SENDER_NAME=${{ secrets.BREVO_SENDER_NAME }}
+            PADDLE_WEBHOOK_SECRET_TOKEN=${{ secrets.PADDLE_WEBHOOK_SECRET_TOKEN }}
+            PADDLE_SUCCESS_URL=${{ secrets.PADDLE_SUCCESS_URL }}
+            PADDLE_CLIENT_TOKEN=${{ secrets.PADDLE_CLIENT_TOKEN }}
+            GETTING_STARTED_PKG=${{ secrets.GETTING_STARTED_PKG }}
+            EXTENDED_CLEANING_PKG=${{ secrets.EXTENDED_CLEANING_PKG }}
+            HEAVY_CLEANING_PKG=${{ secrets.HEAVY_CLEANING_PKG }}
+            ONE_DRIVE_CLIENT_ID=${{ secrets.ONE_DRIVE_CLIENT_ID }}
+            ONE_DRIVE_CLIENT_SECRET_ID=${{ secrets.ONE_DRIVE_CLIENT_SECRET_ID }}
+            ONE_DRIVE_CLIENT_SECRET_VALUE=${{ secrets.ONE_DRIVE_CLIENT_SECRET_VALUE }}
+            ONE_DRIVE_OBJECT_ID=${{ secrets.ONE_DRIVE_OBJECT_ID }}
+            ONE_DRIVE_OBJECT_TENANT_ID=${{ secrets.ONE_DRIVE_OBJECT_TENANT_ID }}
+            ONE_DRIVE_AUTH_URL=${{ secrets.ONE_DRIVE_AUTH_URL }}
+            NODE_ENV=production
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          envs: ENV_FILE_CONTENTS
+          script: |
+            set -euo pipefail
+            cd ${{ secrets.VPS_DEPLOY_PATH }}
+
+            # Write .env atomically with strict perms; old file rotated for one-step rollback.
+            umask 077
+            printf '%s\n' "$ENV_FILE_CONTENTS" > .env.new
+            [ -f .env ] && mv .env .env.bak || true
+            mv .env.new .env
+
+            echo "==> Logging in to Docker Hub"
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+            echo "==> Pulling latest image"
+            docker compose pull
+
+            echo "==> Restarting stack"
+            docker compose up -d --remove-orphans
+
+            echo "==> Pruning old images"
+            docker image prune -f
+
+            echo "==> Status"
+            docker compose ps

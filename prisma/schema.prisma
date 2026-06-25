@@ -1,0 +1,332 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+  binaryTargets   = ["native", "darwin-arm64", "linux-musl-arm64-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+model User {
+  id                               String                             @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  name                             String                             @db.VarChar(255)
+  email                            String                             @unique(map: "ix_users_email") @db.VarChar(255)
+  password                         String?                            @db.Text
+  createdAt                        DateTime?                          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                        DateTime?                          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  emailVerified                    DateTime?                          @map("email_verified") @db.Timestamptz(6)
+  role                             Role                               @default(USER)
+  googleDriveAccounts              GoogleDriveAccount[]
+  googleDriveFiles                 GoogleDriveFile[]
+  googleDriveFolders               GoogleDriveFolder[]
+  googleDriveFolderTrees           GoogleDriveFolderTree[]
+  oneDriveAccounts                 OneDriveAccount[]
+  oneDriveFiles                    OneDriveFile[]
+  oneDriveFolders                  OneDriveFolder[]
+  oneDriveFolderTrees              OneDriveFolderTree[]
+  otpCodes                         OTPCode[]
+  subscription                     SubscribedUser?
+  fileChunks                       FileChunk[]
+  rateLimits                       RateLimit[]
+
+  @@map("users")
+}
+
+model SubscriptionPlan {
+  uuid               String            @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  packageName        String            @map("package_name") @db.VarChar(255)
+  monthlyPrice       Decimal?          @map("monthly_price") @db.Decimal
+  yearlyPrice        Decimal?          @map("yearly_price") @db.Decimal
+  noOfAccounts       Int               @map("no_of_accounts")
+  noOfEmailAccounts  Int?              @map("no_of_email_accounts")
+  noOfCloudAccounts  Int?              @map("no_of_cloud_accounts")
+  noOfSocialAccounts Int?              @map("no_of_social_accounts")
+  maxConnectedDrives Int               @map("max_connected_drives")
+  tier               SubscriptionTier
+  actionLimit        Boolean           @map("action_limit")
+  cycle              SubscriptionCycle
+  features           Json              @db.Json
+  description        String            @db.Text
+  createdAt          DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime?         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  subscribedUsers    SubscribedUser[]
+
+  @@map("subscription_plans")
+}
+
+model SubscribedUser {
+  uuid                    String           @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId                  String           @unique @map("user_id") @db.VarChar(255)
+  subscriptionPlanId      String           @map("subscription_plan_id") @db.VarChar(255)
+  connectedAccounts       Int              @map("connected_accounts")
+  connectedEmailAccounts  Int              @default(0) @map("connected_email_accounts")
+  connectedCloudAccounts  Int              @default(0) @map("connected_cloud_accounts")
+  connectedSocialAccounts Int              @default(0) @map("connected_social_accounts")
+  usage                   Int
+  paidAmount              Decimal?         @map("paid_amount") @db.Decimal
+  subStartTime            DateTime?        @map("sub_start_time") @db.Timestamptz(6)
+  subEndTime              DateTime?        @map("sub_end_time") @db.Timestamptz(6)
+  createdAt               DateTime?        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime?        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  subscriptionPlan        SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [uuid], onDelete: Cascade, onUpdate: NoAction)
+  user                    User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("subscribed_users")
+}
+
+model OTPCode {
+  id        String    @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  code      String    @unique @db.VarChar(255)
+  userId    String    @map("user_id") @db.VarChar(255)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  used      Boolean   @default(false)
+  attempts  Int       @default(0)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId], map: "ix_otp_codes_user_id")
+  @@map("otp_codes")
+}
+
+model GoogleDriveAccount {
+  id                               String                             @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  gmailAccount                     String                             @unique @map("gmail_account") @db.VarChar(255)
+  userId                           String                             @map("user_id") @db.VarChar(255)
+  accessToken                      String                             @map("access_token")
+  refreshToken                     String                             @map("refresh_token") @db.Text
+  expiresIn                        BigInt                             @map("expires_in")
+  scope                            String?
+  startPageToken                   String?                            @map("start_page_token") @db.VarChar(255)
+  lastSyncAt                       DateTime?                          @map("last_sync_at") @db.Timestamptz(6)
+  deletionStatus                   String                             @default("active") @map("deletion_status") @db.VarChar(32)
+  createdAt                        DateTime?                          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                        DateTime?                          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                             User                               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  files                            GoogleDriveFile[]
+  folders                          GoogleDriveFolder[]
+  folderTree                       GoogleDriveFolderTree?
+
+  @@map("google_drive_accounts")
+}
+
+model GoogleDriveFolderTree {
+  googleDriveAccountId String             @id @map("google_drive_account_id") @db.VarChar(255)
+  userId               String             @map("user_id") @db.VarChar(255)
+  folderTree           Json               @map("folder_tree") @db.Json
+  createdAt            DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  account              GoogleDriveAccount @relation(fields: [googleDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("google_drive_folders_trees")
+}
+
+model GoogleDriveFolder {
+  id                   String             @id @db.VarChar(255)
+  userId               String             @map("user_id") @db.VarChar(255)
+  googleDriveAccountId String             @map("google_drive_account_id") @db.VarChar(255)
+  folderName           String             @map("folder_name") @db.VarChar(255)
+  folderParents        String             @map("folder_parents") @db.VarChar(255)
+  folderPath           String             @map("folder_path") @db.Text
+  createdAt            DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  files                GoogleDriveFile[]
+  account              GoogleDriveAccount @relation(fields: [googleDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("google_drive_folders")
+}
+
+model GoogleDriveFile {
+  id                               String                            @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId                           String                            @map("user_id") @db.VarChar(255)
+  googleDriveAccountId             String                            @map("google_drive_account_id") @db.VarChar(255)
+  fileId                           String                            @unique @map("file_id") @db.VarChar(255)
+  fileName                         String                            @map("file_name") @db.VarChar(255)
+  fileParents                      String                            @map("file_parents") @db.VarChar(255)
+  fileCreatedTime                  DateTime                          @map("file_created_time") @db.Timestamp(6)
+  md5Checksum                      String?                           @db.VarChar(255)
+  mimeType                         String                            @map("mime_type") @db.VarChar(255)
+  fileSize                         BigInt?                           @map("file_size")
+  viewed_by_me_time                DateTime?                         @db.Timestamp(6)
+  filePath                         String                            @map("file_path")
+  web_view_link                    String?                           @db.Text
+  thumbnail_link                   String?                           @db.Text
+  contentHash                      String?                           @map("content_hash") @db.VarChar(64)
+  indexStatus                      FileStatus                        @default(PENDING) @map("index_status")
+  indexedAt                        DateTime?                         @map("indexed_at") @db.Timestamptz(6)
+  indexError                       String?                           @map("index_error") @db.Text
+  createdAt                        DateTime?                         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                        DateTime?                         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  folder                           GoogleDriveFolder                 @relation(fields: [fileParents], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  account                          GoogleDriveAccount                @relation(fields: [googleDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                             User                              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("google_drive_files")
+}
+
+model OneDriveAccount {
+  id              String              @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  onedriveAccount String              @unique @map("onedrive_account") @db.VarChar(255)
+  userId          String              @map("user_id") @db.VarChar(255)
+  accessToken     String              @map("access_token")
+  refreshToken    String              @map("refresh_token")
+  expiresIn       DateTime            @map("expires_in") @db.Timestamptz(6)
+  scope           String
+  delta_link      String?
+  lastSyncAt      DateTime?           @map("last_sync_at") @db.Timestamptz(6)
+  deletionStatus  String              @default("active") @map("deletion_status") @db.VarChar(32)
+  createdAt       DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime?           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  files           OneDriveFile[]
+  folders         OneDriveFolder[]
+  folderTree      OneDriveFolderTree?
+
+  @@map("one_drive_accounts")
+}
+
+model OneDriveFolderTree {
+  userId            String          @map("user_id") @db.VarChar(255)
+  oneDriveAccountId String          @id @map("one_drive_account_id") @db.VarChar(255)
+  folderTree        Json            @map("folder_tree") @db.Json
+  createdAt         DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  account           OneDriveAccount @relation(fields: [oneDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("one_drive_folders_trees")
+}
+
+model OneDriveFolder {
+  id                String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId            String          @map("user_id") @db.VarChar(255)
+  oneDriveAccountId String          @map("one_drive_account_id") @db.VarChar(255)
+  folderName        String          @map("folder_name") @db.VarChar(255)
+  folderParents     String          @map("folder_parents") @db.VarChar(255)
+  folderPath        String          @map("folder_path") @db.Text
+  createdAt         DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  files             OneDriveFile[]
+  account           OneDriveAccount @relation(fields: [oneDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("one_drive_folders")
+}
+
+model OneDriveFile {
+  id                 String          @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId             String          @map("user_id") @db.VarChar(255)
+  oneDriveAccountId  String          @map("one_drive_account_id") @db.VarChar(255)
+  fileId             String          @unique @map("file_id") @db.VarChar(255)
+  fileName           String          @map("file_name") @db.VarChar(255)
+  fileParents        String          @map("file_parents") @db.VarChar(255)
+  fileCreatedTime    DateTime        @map("file_created_time") @db.Timestamptz(6)
+  md5Checksum        String?         @db.VarChar(255)
+  mimeType           String          @db.VarChar(255)
+  fileSize           BigInt?         @map("file_size")
+  filePath           String          @map("file_path")
+  last_modified_time DateTime?       @db.Timestamp(6)
+  webViewLink        String?
+  contentHash        String?         @map("content_hash") @db.VarChar(64)
+  indexStatus        FileStatus      @default(PENDING) @map("index_status")
+  indexedAt          DateTime?       @map("indexed_at") @db.Timestamptz(6)
+  indexError         String?         @map("index_error") @db.Text
+  createdAt          DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime?       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  folder             OneDriveFolder  @relation(fields: [fileParents], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  account            OneDriveAccount @relation(fields: [oneDriveAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("one_drive_files")
+}
+
+
+model ChunkEmbedding {
+  id        String                      @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  chunkHash String                      @unique @map("chunk_hash") @db.VarChar(64)
+  embedding Unsupported("vector(768)")
+  model     String                      @db.VarChar(64)
+  createdAt DateTime?                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  chunks    FileChunk[]
+
+  @@map("chunk_embeddings")
+}
+
+model FileChunk {
+  id           String         @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId       String         @map("user_id") @db.VarChar(255)
+  providerType ProviderType   @map("provider_type")
+  accountId    String         @map("account_id") @db.VarChar(255)
+  fileId       String         @map("file_id") @db.VarChar(255)
+  chunkIndex   Int            @map("chunk_index")
+  content      String         @db.Text
+  chunkHash    String         @map("chunk_hash") @db.VarChar(64)
+  embeddingId  String         @map("embedding_id") @db.VarChar(255)
+  createdAt    DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  embedding    ChunkEmbedding @relation(fields: [embeddingId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@unique([providerType, fileId, chunkIndex], map: "uq_file_chunk_provider_file_index")
+  @@index([providerType, fileId], map: "idx_file_chunk_provider_file")
+  @@index([chunkHash], map: "idx_file_chunk_hash")
+  @@index([userId, providerType], map: "idx_file_chunk_user_provider")
+  @@index([accountId], map: "idx_file_chunk_account")
+  @@map("file_chunks")
+}
+
+model CacheEntry {
+  key       String   @id @db.VarChar(255)
+  value     Json     @db.JsonB
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([expiresAt], map: "idx_cache_expires_at")
+  @@map("cache_entries")
+}
+
+model RateLimit {
+  id       String   @id @default(dbgenerated("gen_random_uuid()::text")) @db.VarChar(255)
+  userId   String   @map("user_id") @db.VarChar(255)
+  action   String   @db.VarChar(64)
+  windowAt DateTime @map("window_at") @db.Timestamptz(6)
+  count    Int      @default(0)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, action, windowAt], map: "uq_rate_limit_user_action_window")
+  @@index([windowAt], map: "idx_rate_limit_window")
+  @@map("rate_limits")
+}
+
+enum FileStatus {
+  PENDING
+  INDEXING
+  INDEXED
+  FAILED
+  SKIPPED
+}
+
+enum ProviderType {
+  google
+  onedrive
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum SubscriptionCycle {
+  monthly
+  yearly
+}
+
+enum SubscriptionTier {
+  FREE
+  BASE
+  PRO
+}
