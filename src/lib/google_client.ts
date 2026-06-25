@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
+
+const OAuth2Client = google.auth.OAuth2;
 dotenv.config();
 
 const SCOPES = [
