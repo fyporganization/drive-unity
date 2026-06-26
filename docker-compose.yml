@@ -1,4 +1,22 @@
 services:
+  driveunity-psql:
+    image: postgres:16-alpine
+    container_name: driveunity-psql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - driveunity-pgdata:/var/lib/postgresql/data
+    networks:
+      - traefik-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     image: ${DOCKER_REPO}:${DOCKER_TAG}
     container_name: drive-unity-app
@@ -7,6 +25,9 @@ services:
       - .env
     expose:
       - "3000"
+    depends_on:
+      driveunity-psql:
+        condition: service_healthy
     networks:
       - traefik-network
     healthcheck:
@@ -45,8 +66,12 @@ services:
       - temporal-network
     depends_on:
       - app
+      - driveunity-psql
     labels:
       - "traefik.enable=false"
+
+volumes:
+  driveunity-pgdata:
 
 networks:
   traefik-network:
