@@ -86,9 +86,8 @@ jobs:
             GOOGLE_CERT_URL=${{ secrets.GOOGLE_CERT_URL }}
             GOOGLE_JS_ORIGINS=${{ secrets.GOOGLE_JS_ORIGINS }}
             GOOGLE_AUTH_REDIRECT_URI=${{ secrets.GOOGLE_AUTH_REDIRECT_URI }}
-            TEMPORAL_CLIENT=${{ secrets.TEMPORAL_CLIENT }}
+            TEMPORAL_ADDRESS=${{ secrets.TEMPORAL_ADDRESS }}
             TEMPORAL_NAMESPACE=${{ secrets.TEMPORAL_NAMESPACE }}
-            PYTHON_API_URL=${{ secrets.PYTHON_API_URL }}
             TOKEN=${{ secrets.TOKEN }}
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
