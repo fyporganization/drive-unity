@@ -23,7 +23,7 @@ services:
       - "traefik.http.routers.drive-unity.rule=Host(`${APP_HOST}`)"
       - "traefik.http.routers.drive-unity.entrypoints=websecure"
       - "traefik.http.routers.drive-unity.tls=true"
-      - "traefik.http.routers.drive-unity.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.drive-unity.tls.certresolver=production"
       - "traefik.http.services.drive-unity.loadbalancer.server.port=3000"
 
       # HTTP → HTTPS redirect
