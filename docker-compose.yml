@@ -8,7 +8,7 @@ services:
     expose:
       - "3000"
     networks:
-      - treafik_network
+      - traefik-network
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
       interval: 30s
@@ -17,7 +17,7 @@ services:
       start_period: 30s
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=treafik_network"
+      - "traefik.docker.network=traefik-network"
 
       # HTTPS router — Traefik terminates TLS via Let's Encrypt
       - "traefik.http.routers.drive-unity.rule=Host(`${APP_HOST}`)"
@@ -41,12 +41,12 @@ services:
       - .env
     command: ["node_modules/.bin/tsx", "worker/index.ts"]
     networks:
-      - treafik_network
+      - traefik-network
     depends_on:
       - app
     labels:
       - "traefik.enable=false"
 
 networks:
-  treafik_network:
+  traefik-network:
     external: true
