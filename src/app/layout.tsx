@@ -9,9 +9,9 @@ export const metadata = {
     keywords: 'cloud storage, drive manager, file management, multi-cloud, Google Drive, Dropbox, OneDrive',
     authors: [{ name: 'DriveUnity Team' }],
     icons: {
-        icon: '/logo.svg',
-        shortcut: '/logo.svg',
-        apple: '/logo.svg',
+        icon: '/favicon.ico',
+        shortcut: '/favicon.ico',
+        apple: '/favicon.ico',
     },
     openGraph: {
         title: 'DriveUnity - Multi-Cloud Drive Manager',
