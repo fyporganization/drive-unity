@@ -1,5 +1,7 @@
-FROM node:24-alpine AS base
-RUN apk add --no-cache libc6-compat
+FROM node:24-slim AS base
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      openssl ca-certificates wget \
+ && rm -rf /var/lib/apt/lists/*
 
 # ─── Install dependencies + generate Prisma client ───────────────────────────
 FROM base AS deps
@@ -34,8 +36,8 @@ FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs \
- && adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs \
+ && useradd --system --uid 1001 --gid nodejs --no-create-home nextjs
 
 # Full node_modules (worker needs Temporal SDK, pg, googleapis etc. that
 # standalone build trims away).
