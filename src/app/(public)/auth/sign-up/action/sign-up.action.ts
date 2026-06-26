@@ -64,8 +64,9 @@ export async function signUpAction(input: SignUpInput): Promise<SignUpResult> {
       };
     }
 
-    // OTP email verification is bypassed in development only
-    const bypassOTP = process.env.NODE_ENV === 'development';
+    const bypassOTP =
+      process.env.NODE_ENV === 'development' ||
+      process.env.BYPASS_OTP === 'true';
 
     const encryptedPassword = encrypt(password);
 

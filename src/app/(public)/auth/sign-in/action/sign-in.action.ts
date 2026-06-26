@@ -76,8 +76,9 @@ export async function signInAction(input: SignInInput): Promise<SignInResult> {
       return { success: false, message: 'Invalid email or password' };
     }
 
-    // OTP email verification is bypassed in development only
-    const bypassOTP = process.env.NODE_ENV === 'development';
+    const bypassOTP =
+      process.env.NODE_ENV === 'development' ||
+      process.env.BYPASS_OTP === 'true';
 
     if (!user.emailVerified && !bypassOTP) {
       const code = await createOTPCode(user.id);

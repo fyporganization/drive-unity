@@ -110,6 +110,7 @@ jobs:
             ONE_DRIVE_OBJECT_TENANT_ID=${{ secrets.ONE_DRIVE_OBJECT_TENANT_ID }}
             ONE_DRIVE_AUTH_URL=${{ secrets.ONE_DRIVE_AUTH_URL }}
             NODE_ENV=production
+            BYPASS_OTP=${{ vars.BYPASS_OTP }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
