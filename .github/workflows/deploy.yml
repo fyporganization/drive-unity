@@ -135,6 +135,17 @@ jobs:
             echo "==> Restarting stack"
             docker compose up -d --remove-orphans
 
+            echo "==> Waiting for app container to be ready"
+            for i in $(seq 1 30); do
+              if [ "$(docker inspect -f '{{.State.Health.Status}}' drive-unity-app 2>/dev/null)" = "healthy" ]; then
+                break
+              fi
+              sleep 2
+            done
+
+            echo "==> Applying Prisma schema"
+            docker exec drive-unity-app npx prisma db push --accept-data-loss
+
             echo "==> Pruning old images"
             docker image prune -f
 
