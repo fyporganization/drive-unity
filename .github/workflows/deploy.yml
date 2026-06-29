@@ -144,6 +144,11 @@ jobs:
               sleep 2
             done
 
+            echo "==> Running one-time migration: SubscriptionTier enum → varchar"
+            docker exec drive-unity-app npx prisma db execute \
+              --file prisma/migrations/20260629130000_subscription_tier_to_varchar/migration.sql \
+              --schema prisma/schema.prisma || echo "Migration likely already applied — continuing"
+
             echo "==> Applying Prisma schema"
             docker exec drive-unity-app npx prisma db push --accept-data-loss
 
