@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth/session";
+import { requireAuth } from "@/lib/auth/server";
 import { db } from "@/lib/db";
 import { triggerOneDriveAccountDelete } from "@/lib/workflows/triggers";
 
 export async function GET(request: NextRequest) {
     try {
-        const session = await getSession();
-        const userId = session.id;
-
-        if (!userId) {
-            return NextResponse.json(
-                { error: "Unauthorized. Please login first." },
-                { status: 401 }
-            );
-        }
+        const auth = await requireAuth();
+        if (auth instanceof NextResponse) return auth;
+        const userId = auth.id;
 
         const user = await db.user.findUnique({
             where: { id: userId },
@@ -81,15 +75,9 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     try {
-        const session = await getSession();
-        const userId = session.id;
-
-        if (!userId) {
-            return NextResponse.json(
-                { error: "Unauthorized. Please login first." },
-                { status: 401 }
-            );
-        }
+        const auth = await requireAuth();
+        if (auth instanceof NextResponse) return auth;
+        const userId = auth.id;
 
         const { searchParams } = new URL(request.url);
         const driveId = searchParams.get("driveId");

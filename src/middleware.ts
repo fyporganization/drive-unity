@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
+import { getSession } from '@/lib/auth/session';
 
 const PUBLIC_ROUTES = [
   '/home',
@@ -21,33 +21,13 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-async function hasValidSession(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const TOKEN = process.env.TOKEN || 'USER_INFO';
-  const cookie = cookieStore.get(TOKEN)?.value;
-  if (!cookie) return false;
-
-  try {
-    let cleanCookie = cookie.trim();
-    if (cleanCookie.charCodeAt(0) === 0xfeff) cleanCookie = cleanCookie.substring(1);
-    if (cleanCookie.startsWith('"') && cleanCookie.endsWith('"')) {
-      cleanCookie = cleanCookie.slice(1, -1);
-    }
-    cleanCookie = cleanCookie.replace(/\\"/g, '"');
-
-    const session = JSON.parse(cleanCookie);
-    return !!(session && session.id && session.email);
-  } catch {
-    return false;
-  }
-}
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isPublicPath(pathname)) return NextResponse.next();
 
-  if (await hasValidSession()) return NextResponse.next();
+  const session = await getSession();
+  if (session?.id) return NextResponse.next();
 
   const authUrl = new URL('/auth', request.url);
   authUrl.searchParams.set('redirect', pathname);

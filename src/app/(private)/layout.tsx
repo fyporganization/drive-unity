@@ -9,7 +9,6 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import PrivateSidebar from '@/app/(private)/_components/layout/PrivateSidebar';
 import AdminSidebar from '@/app/(private)/_components/layout/AdminSidebar';
 import PrivateTopbar from '@/app/(private)/_components/layout/PrivateTopbar';
-import { AdSenseScript } from '@/components/ads/AdSenseScript';
 import './private.css';
 
 interface User {
@@ -126,7 +125,6 @@ export default function PrivateLayout({
 
   return (
     <div className="min-h-screen flex bg-background private-layout">
-      <AdSenseScript />
       <motion.aside
         initial={false}
         animate={{ width: sidebarOpen ? 250 : 0 }}

@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOneDriveAuthUrl } from "@/lib/one_drive_client";
-import { getSession } from '@/lib/auth/session';
+import { requireAuth } from "@/lib/auth/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
     try {
-        const session = await getSession();
-        const userId = session.id;
-        if (!userId) {
-            return NextResponse.json(
-                { error: "Unauthorized. Please login first." },
-                { status: 401 }
-            );
-        }
+        const auth = await requireAuth();
+        if (auth instanceof NextResponse) return auth;
+        const userId = auth.id;
 
         const user = await db.user.findUnique({
             where: { id: userId },

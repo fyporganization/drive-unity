@@ -1,7 +1,10 @@
 import { ColorSchemeScript } from '@mantine/core';
+import Script from 'next/script';
 import { AppProviders } from './providers/AppProvider';
 import { Toaster } from "@/components/ui/toaster";
 import '@/app/globals.css';
+
+const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 
 export const metadata = {
     title: 'DriveUnity - Multi-Cloud Drive Manager',
@@ -41,8 +44,20 @@ export default function RootLayout({children}: {
             <ColorSchemeScript />
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            {ADSENSE_CLIENT_ID && (
+                <meta name="google-adsense-account" content={ADSENSE_CLIENT_ID} />
+            )}
         </head>
         <body suppressHydrationWarning>
+        {ADSENSE_CLIENT_ID && (
+            <Script
+                id="adsense-loader"
+                async
+                strategy="afterInteractive"
+                crossOrigin="anonymous"
+                src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+            />
+        )}
         <AppProviders>
             {children}
             <Toaster />
