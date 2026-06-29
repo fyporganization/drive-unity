@@ -5,9 +5,7 @@ export const useSubscriptionData = (userId: string, userEmail: string) => {
     return useQuery<PaddlePaymentData>({
         queryKey: ['subscription-data', userId],
         queryFn: async () => {
-            const response = await fetch(
-                `/api/paddlePayment/payment?userId=${userId}&userEmail=${userEmail}`
-            )
+            const response = await fetch(`/api/paddlePayment/payment`)
             if (!response.ok) throw new Error('Failed to fetch subscription data')
             return response.json()
         },
@@ -19,7 +17,7 @@ export const useCurrentSubscription = (userId: string) => {
     return useQuery<SubscribedUser>({
         queryKey: ['current-subscription', userId],
         queryFn: async () => {
-            const response = await fetch(`/api/paddlePayment?userId=${userId}`)
+            const response = await fetch(`/api/paddlePayment`)
             if (!response.ok) throw new Error('Failed to fetch current subscription')
             return response.json()
         },

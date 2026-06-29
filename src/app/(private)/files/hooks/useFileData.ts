@@ -27,7 +27,7 @@ export const useFileData = (
 
       const base = getBaseUrl(provider);
       const response = await fetch(
-        `${base}/fileManagement?userId=${userId}&driveId=${driveId}`
+        `${base}/fileManagement?driveId=${driveId}`
       );
 
       if (!response.ok) {

@@ -35,7 +35,6 @@ export async function createOTPCode(userId: string): Promise<string> {
     },
   });
 
-  console.log('OTP code created for user:', userId);
   return code;
 }
 
@@ -47,26 +46,22 @@ export async function verifyOTPCode(code: string) {
   });
 
   if (!otpRecord) {
-    console.log('OTP not found:', code);
     return { success: false, error: 'Invalid verification code', user: null };
   }
 
   if (otpRecord.used) {
-    console.log('OTP already used:', code);
     return { success: false, error: 'Code already used', user: null };
   }
 
   if (new Date() > otpRecord.expiresAt) {
-    console.log('OTP expired:', code);
     return { success: false, error: 'Code expired. Please request a new one.', user: null };
   }
 
   if (otpRecord.attempts >= 5) {
-    console.log('Too many attempts for OTP:', code);
-    return { 
-      success: false, 
-      error: 'Too many attempts. Please request a new code.', 
-      user: null 
+    return {
+      success: false,
+      error: 'Too many attempts. Please request a new code.',
+      user: null
     };
   }
 
@@ -75,7 +70,6 @@ export async function verifyOTPCode(code: string) {
     data: { used: true },
   });
 
-  console.log('OTP verified for user:', otpRecord.user.id);
   return { success: true, user: otpRecord.user, error: null };
 }
 
@@ -90,7 +84,6 @@ export async function incrementOTPAttempts(code: string) {
       where: { id: otpRecord.id },
       data: { attempts: otpRecord.attempts + 1 },
     });
-    console.log('OTP attempt incremented:', code, 'attempts:', otpRecord.attempts + 1);
   }
 }
 

@@ -3,19 +3,17 @@
 import { Prisma, PrismaClient } from "@/generated/prisma"
 import dayjs from "dayjs"
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth/server"
 
 const prisma = new PrismaClient()
 
 
-export async function GET(req: NextRequest) {
-console.log("DEBUG ENV:", {
-    tokenFound: !!process.env.PADDLE_CLIENT_TOKEN,
-    tokenValue: process.env.PADDLE_CLIENT_TOKEN?.substring(0, 10) + "..."
-});
+export async function GET() {
     try {
-        const url = new URL(req.url)
-        const userId = url.searchParams.get("userId") ?? ""
-        const userEmail = url.searchParams.get("userEmail") ?? ""
+        const auth = await requireAuth()
+        if (auth instanceof NextResponse) return auth
+        const userId = auth.id
+        const userEmail = auth.email
 
         const subscriptionPlans = await prisma.subscriptionPlan.findMany()
         subscriptionPlans.forEach(plan => {
@@ -30,8 +28,7 @@ console.log("DEBUG ENV:", {
                     Number(plan.yearlyPrice).toFixed(1)
                 )
             }
-        }) 
-        console.log(subscriptionPlans);
+        })
         return NextResponse.json({
             user_id: userId,
             user_email: userEmail,
@@ -52,9 +49,12 @@ console.log("DEBUG ENV:", {
 
 export async function POST(req: NextRequest) {
     try {
+        const auth = await requireAuth()
+        if (auth instanceof NextResponse) return auth
+        const userId = auth.id
+
         const payload = await req.json()
         const status = payload.data.status
-        const userId = payload.data.custom_data.user_id
 
         if (status === "active") {
             const purchasedPackageUuid = payload.data.items[0].price.custom_data.package_uuid

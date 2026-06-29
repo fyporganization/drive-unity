@@ -85,9 +85,6 @@ jobs:
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             GOOGLE_PROJECT_ID=${{ secrets.GOOGLE_PROJECT_ID }}
-            GOOGLE_AUTH_URI=${{ secrets.GOOGLE_AUTH_URI }}
-            GOOGLE_TOKEN_URI=${{ secrets.GOOGLE_TOKEN_URI }}
-            GOOGLE_CERT_URL=${{ secrets.GOOGLE_CERT_URL }}
             GOOGLE_JS_ORIGINS=${{ secrets.GOOGLE_JS_ORIGINS }}
             GOOGLE_AUTH_REDIRECT_URI=${{ secrets.GOOGLE_AUTH_REDIRECT_URI }}
             TEMPORAL_ADDRESS=${{ secrets.TEMPORAL_ADDRESS }}
@@ -105,11 +102,7 @@ jobs:
             EXTENDED_CLEANING_PKG=${{ secrets.EXTENDED_CLEANING_PKG }}
             HEAVY_CLEANING_PKG=${{ secrets.HEAVY_CLEANING_PKG }}
             ONE_DRIVE_CLIENT_ID=${{ secrets.ONE_DRIVE_CLIENT_ID }}
-            ONE_DRIVE_CLIENT_SECRET_ID=${{ secrets.ONE_DRIVE_CLIENT_SECRET_ID }}
             ONE_DRIVE_CLIENT_SECRET_VALUE=${{ secrets.ONE_DRIVE_CLIENT_SECRET_VALUE }}
-            ONE_DRIVE_OBJECT_ID=${{ secrets.ONE_DRIVE_OBJECT_ID }}
-            ONE_DRIVE_OBJECT_TENANT_ID=${{ secrets.ONE_DRIVE_OBJECT_TENANT_ID }}
-            ONE_DRIVE_AUTH_URL=${{ secrets.ONE_DRIVE_AUTH_URL }}
             ONEDRIVE_REDIRECT_URI=${{ secrets.ONEDRIVE_REDIRECT_URI }}
             NEXT_PUBLIC_ADSENSE_CLIENT_ID=${{ vars.NEXT_PUBLIC_ADSENSE_CLIENT_ID }}
             NODE_ENV=production

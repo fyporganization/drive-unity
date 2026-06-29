@@ -24,9 +24,6 @@ export async function createSession(userId: string) {
 
     const cookieValue = JSON.stringify(cookieData);
 
-    console.log('Creating session for user:', user.email);
-    console.log('Cookie value:', cookieValue);
-
     const cookieStore = await cookies();
     const TOKEN = process.env.TOKEN || 'USER_INFO';
 
@@ -87,8 +84,6 @@ export async function destroySession() {
     const TOKEN = process.env.TOKEN || 'USER_INFO';
 
     cookieStore.delete(TOKEN);
-
-    console.log('Session destroyed');
 
     return { success: true };
   } catch (error) {

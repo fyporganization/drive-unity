@@ -1,21 +1,15 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth/server";
 
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId");
-        const driveId = searchParams.get("driveId");
+        const auth = await requireAuth();
+        if (auth instanceof NextResponse) return auth;
+        const userId = auth.id;
 
-        if (!userId) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "User ID is required",
-                },
-                { status: 400 }
-            );
-        }
+        const { searchParams } = new URL(request.url);
+        const driveId = searchParams.get("driveId");
 
         if (!driveId) {
             return NextResponse.json(

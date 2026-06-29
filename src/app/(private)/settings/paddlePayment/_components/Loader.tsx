@@ -22,13 +22,10 @@ export const PaddleLoader = ({ token, onReady }: PaddleLoaderProps) => {
             window.Paddle.Environment.set('sandbox')
             window.Paddle.Initialize({
                 token: token,
-                eventCallback: (data: any) => {
-                    console.log('Paddle event:', data)
-                },
+                eventCallback: () => {},
             })
             setInitialized(true)
             onReady?.()
-            console.log('Paddle Initialized with token:', token.substring(0, 10) + '...')
         }
     }, [token, onReady, initialized])
 

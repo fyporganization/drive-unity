@@ -1,5 +1,6 @@
 import { PrismaClient } from "@/generated/prisma"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth/server"
 
 const prisma = new PrismaClient()
 
@@ -11,14 +12,11 @@ function serializeBigInt<T>(data: T): T {
     )
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
-        const url = new URL(req.url)
-        const userId = url.searchParams.get("userId")
-
-        if (!userId) {
-            return NextResponse.json({ error: "User ID is required" }, { status: 400 })
-        }
+        const auth = await requireAuth()
+        if (auth instanceof NextResponse) return auth
+        const userId = auth.id
 
         let subscription = await prisma.subscribedUser.findUnique({
             where: { userId },
