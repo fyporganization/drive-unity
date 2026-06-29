@@ -1,4 +1,7 @@
 import { PrismaClient } from "../../src/generated/prisma/index.js"
+import { SUBSCRIPTION_TIERS } from "../../src/lib/constants/plans"
+
+const [FREE, BASE, ENTERPRISE] = SUBSCRIPTION_TIERS
 
 const prisma = new PrismaClient()
 
@@ -8,7 +11,7 @@ async function main() {
         data: [
             {
                 packageName: "Free",
-                tier: "FREE",
+                tier: FREE,
                 maxConnectedDrives: 2,
                 noOfAccounts: 2,
                 actionLimit: true,
@@ -20,27 +23,27 @@ async function main() {
             },
             {
                 packageName: "Base",
-                tier: "BASE",
+                tier: BASE,
                 maxConnectedDrives: 3,
                 noOfAccounts: 3,
                 actionLimit: true,
                 cycle: "monthly",
-                features: ["3 Drives"],
+                features: ["Both clouds", "Unlimited searches", "Duplicate detection", "Freshness score", "Advanced filtration"],
                 description: "Base plan",
-                monthlyPrice: 9.99,
-                yearlyPrice: 99.99,
+                monthlyPrice: 10,
+                yearlyPrice: 100,
             },
             {
-                packageName: "Pro",
-                tier: "PRO",
+                packageName: "Enterprise",
+                tier: ENTERPRISE,
                 maxConnectedDrives: 5,
                 noOfAccounts: 5,
                 actionLimit: false,
                 cycle: "monthly",
-                features: ["5 Drives"],
-                description: "Pro plan",
-                monthlyPrice: 19.99,
-                yearlyPrice: 199.99,
+                features: ["Team based", "Everything in Base", "API access", "Priority support"],
+                description: "Enterprise plan — contact sales for custom pricing",
+                monthlyPrice: null,
+                yearlyPrice: null,
             },
         ],
     })

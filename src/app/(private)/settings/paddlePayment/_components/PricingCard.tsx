@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,6 +29,7 @@ export const PricingCard = ({
   const marketing =
     marketingPlans[plan.tier as keyof typeof marketingPlans];
   const isPopular = marketing?.popular;
+  const isContactPricing = price === null || price === undefined;
 
   if (!marketing) return null;
 
@@ -58,12 +60,20 @@ export const PricingCard = ({
               )}
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-display font-bold text-foreground">
-                ${price}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                /{billingCycle === 'monthly' ? 'mo' : 'yr'}
-              </span>
+              {isContactPricing ? (
+                <span className="text-3xl font-display font-bold text-foreground">
+                  Contact Us
+                </span>
+              ) : (
+                <>
+                  <span className="text-3xl font-display font-bold text-foreground">
+                    ${price}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    /{billingCycle === 'monthly' ? 'mo' : 'yr'}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -79,21 +89,31 @@ export const PricingCard = ({
             ))}
           </ul>
 
-          <Button
-            className="w-full mt-auto"
-            variant={
-              isCurrentPlan
-                ? 'outline'
-                : isPopular
-                ? 'default'
-                : 'outline'
-            }
-            disabled={isCurrentPlan || isLoading}
-            onClick={() => onSubscribe(plan)}
-          >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {isCurrentPlan ? 'Current Plan' : 'Get Started'}
-          </Button>
+          {isContactPricing ? (
+            <Button
+              className="w-full mt-auto"
+              variant={isPopular ? 'default' : 'outline'}
+              asChild
+            >
+              <Link href="/contact">Contact Sales</Link>
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-auto"
+              variant={
+                isCurrentPlan
+                  ? 'outline'
+                  : isPopular
+                  ? 'default'
+                  : 'outline'
+              }
+              disabled={isCurrentPlan || isLoading}
+              onClick={() => onSubscribe(plan)}
+            >
+              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isCurrentPlan ? 'Current Plan' : 'Get Started'}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </motion.div>

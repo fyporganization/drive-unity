@@ -7,23 +7,25 @@ interface MarketingContent {
 
 export const marketingPlans: Record<string, MarketingContent> = {
     BASE: {
-        subtitle: 'Best for small teams',
+        subtitle: 'Best for power users & small teams',
         features: [
-            'Up to 3 Connected Drives',
-            'Unlimited File Indexing',
+            'Both Clouds (Google Drive + OneDrive)',
+            'Unlimited Searches',
+            'Duplicate Detection',
+            'Freshness Score',
             'Advanced Filtration',
             'AI Semantic Search',
         ],
         popular: true,
         badge: 'Most Popular',
     },
-    PRO: {
-        subtitle: 'For power users & agencies',
+    ENTERPRISE: {
+        subtitle: 'For large organizations & teams',
         features: [
-            'Up to 5 Connected Drives',
-            'Unlimited File Indexing',
-            'Advanced Filtration',
-            'AI Semantic Search',
+            'Team-based access',
+            'Everything in Base',
+            'API Access',
+            'Priority support',
         ],
         popular: false,
     },

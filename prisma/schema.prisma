@@ -46,7 +46,7 @@ model SubscriptionPlan {
   noOfCloudAccounts  Int?              @map("no_of_cloud_accounts")
   noOfSocialAccounts Int?              @map("no_of_social_accounts")
   maxConnectedDrives Int               @map("max_connected_drives")
-  tier               SubscriptionTier
+  tier               String            @db.VarChar(32)
   actionLimit        Boolean           @map("action_limit")
   cycle              SubscriptionCycle
   features           Json              @db.Json
@@ -325,8 +325,3 @@ enum SubscriptionCycle {
   yearly
 }
 
-enum SubscriptionTier {
-  FREE
-  BASE
-  PRO
-}

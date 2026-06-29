@@ -8,14 +8,13 @@ import { enforceRateLimit, RateLimitExceededError } from '@/lib/rate-limit';
 export interface AISearchActionParams {
   query: string;
   searchMode: 'images' | 'documents';
-  accountIds?: string[];
   limit?: number;
 }
 
 /**
- * Server Action — replaces the Python proxy in /api/ai-search/route.ts.
- * Authenticates via cookie session, then hands off to `performAISearch` for
- * the actual pgvector query. Frontend uses TanStack `useMutation` to drive it.
+ * Server Action — unified semantic search across the user's connected drives
+ * (Google + OneDrive). Authenticates via cookie session, verifies the user
+ * has at least one connected drive, then runs the pgvector query.
  */
 export async function aiSearchAction(params: AISearchActionParams): Promise<AISearchResponse> {
   const session = await getSession();
@@ -41,26 +40,20 @@ export async function aiSearchAction(params: AISearchActionParams): Promise<AISe
     };
   }
 
-  let accountIds: string[] = Array.isArray(params.accountIds)
-    ? params.accountIds.filter((id): id is string => typeof id === 'string' && id.length > 0)
-    : [];
+  const [googleCount, oneDriveCount] = await Promise.all([
+    db.googleDriveAccount.count({ where: { userId: session.id } }),
+    db.oneDriveAccount.count({ where: { userId: session.id } }),
+  ]);
 
-  if (accountIds.length === 0) {
-    const accounts = await db.googleDriveAccount.findMany({
-      where: { userId: session.id },
-      select: { id: true },
-    });
-    if (accounts.length === 0) {
-      return {
-        success: false,
-        query: params.query,
-        keywords: [],
-        results_count: 0,
-        results: [],
-        error: 'No connected Google Drive account found',
-      };
-    }
-    accountIds = accounts.map((a) => a.id);
+  if (googleCount + oneDriveCount === 0) {
+    return {
+      success: false,
+      query: params.query,
+      keywords: [],
+      results_count: 0,
+      results: [],
+      error: 'No connected drive found — connect Google Drive or OneDrive first',
+    };
   }
 
   try {
@@ -70,7 +63,6 @@ export async function aiSearchAction(params: AISearchActionParams): Promise<AISe
       userId: session.id,
       query: params.query.trim(),
       searchMode: params.searchMode,
-      accountIds,
       limit: params.limit,
     });
   } catch (err) {

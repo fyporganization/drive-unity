@@ -1,3 +1,5 @@
+import type { SubscriptionTier } from '@/lib/constants/plans'
+
 export interface SubscriptionPlan {
     uuid: string
     packageName: string
@@ -8,7 +10,7 @@ export interface SubscriptionPlan {
     noOfCloudAccounts: number | null
     noOfSocialAccounts: number | null
     maxConnectedDrives: number
-    tier: 'FREE' | 'BASE' | 'PRO'
+    tier: SubscriptionTier
     actionLimit: boolean
     cycle: 'monthly' | 'yearly'
     features: string[]

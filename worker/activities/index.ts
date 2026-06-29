@@ -4,4 +4,6 @@ export * from './drive/onedrive';
 export * from './drive/deleteAccount';
 export * from './rag/documents';
 export * from './rag/images';
+export * from './rag/oneDriveDocuments';
+export * from './rag/oneDriveImages';
 export * from './admin/scheduled';

@@ -20,7 +20,8 @@ export interface SearchResult {
   thumbnail?: string;
   web_view_link?: string;
   path: string;
-  google_drive_account_id?: string;
+  provider: 'google' | 'onedrive';
+  account_email: string;
 }
 
 interface UseAISearchReturn {

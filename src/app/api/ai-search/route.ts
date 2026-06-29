@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
   const result = await aiSearchAction({
     query: body.query,
     searchMode: body.searchMode,
-    accountIds: body.accountIds,
     limit: body.limit,
   });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -19,7 +19,6 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useAISearch, type SearchResult } from '@/lib/api/queries/useAISearch';
-import { useGoogleDriveStatus } from '@/app/(private)/hooks/useAuthStatus';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -186,22 +185,6 @@ export const SearchContent = () => {
     reset: resetSearch,
   } = useAISearch();
 
-  const { accounts } = useGoogleDriveStatus();
-  const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (!selectedAccountId && accounts.length > 0) {
-      setSelectedAccountId('all');
-    }
-  }, [accounts, selectedAccountId]);
-
-  const accountEmailMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const acc of accounts) {
-      map[acc.id] = acc.gmailAccount;
-    }
-    return map;
-  }, [accounts]);
 
   const results = useMemo(() => {
     let filtered = rawResults.filter(
@@ -257,21 +240,8 @@ export const SearchContent = () => {
 
   const handleSearch = (searchQuery?: string) => {
     const q = searchQuery ?? query;
-    if (q.trim()) {
-      const accountIds =
-        !selectedAccountId || selectedAccountId === 'all'
-          ? accounts.map((a) => a.id)
-          : [selectedAccountId];
-
-      if (accountIds.length === 0) return;
-
-      search({
-        query: q,
-        searchMode,
-        accountIds,
-        limit: 20,
-      });
-    }
+    if (!q.trim()) return;
+    search({ query: q, searchMode, limit: 20 });
   };
 
   const chartData = useMemo(
@@ -378,26 +348,6 @@ export const SearchContent = () => {
               </button>
             </div>
             <div className="flex items-center gap-2">
-              {accounts.length > 1 && (
-                <Select
-                  value={selectedAccountId}
-                  onValueChange={setSelectedAccountId}
-                >
-                  <SelectTrigger className="h-9 rounded-lg text-xs w-[220px]">
-                    <SelectValue placeholder="Select account" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      All accounts ({accounts.length})
-                    </SelectItem>
-                    {accounts.map((acc) => (
-                      <SelectItem key={acc.id} value={acc.id}>
-                        {acc.gmailAccount}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -728,11 +678,7 @@ export const SearchContent = () => {
                         result={r}
                         query={query}
                         index={i}
-                        accountEmail={
-                          accounts.length > 1 && r.google_drive_account_id
-                            ? accountEmailMap[r.google_drive_account_id]
-                            : undefined
-                        }
+                        accountEmail={r.account_email}
                       />
                     ))}
                   </div>
@@ -744,11 +690,7 @@ export const SearchContent = () => {
                         result={r}
                         query={query}
                         index={i}
-                        accountEmail={
-                          accounts.length > 1 && r.google_drive_account_id
-                            ? accountEmailMap[r.google_drive_account_id]
-                            : undefined
-                        }
+                        accountEmail={r.account_email}
                       />
                     ))}
                   </div>
