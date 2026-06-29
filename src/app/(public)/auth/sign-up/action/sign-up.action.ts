@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { signupSchema, validateData } from '@/lib/validations/schemas';
 import { encrypt } from '@/lib/encryption';
 import { isPasswordStrong } from '@/lib/auth/password-strength';
-import { createSession } from '@/lib/auth/session';
+import { createSession } from '@/lib/auth/session-create';
 import { createOTPCode } from '@/lib/auth/otp';
 import { sendOTPEmail } from '@/lib/auth/email';
 import { checkAuthRateLimit } from '@/lib/auth/action-helpers';

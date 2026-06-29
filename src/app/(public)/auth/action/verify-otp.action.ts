@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { verifyOTPSchema, emailSchema, validateData } from '@/lib/validations/schemas';
 import { verifyOTPCode, incrementOTPAttempts, createOTPCode } from '@/lib/auth/otp';
 import { sendOTPEmail } from '@/lib/auth/email';
-import { createSession } from '@/lib/auth/session';
+import { createSession } from '@/lib/auth/session-create';
 import { checkAuthRateLimit } from '@/lib/auth/action-helpers';
 
 export interface VerifyOtpResult {

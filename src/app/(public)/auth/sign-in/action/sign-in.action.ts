@@ -3,7 +3,7 @@
 import { db } from '@/lib/db';
 import { loginSchema, validateData } from '@/lib/validations/schemas';
 import { decrypt } from '@/lib/encryption';
-import { createSession } from '@/lib/auth/session';
+import { createSession } from '@/lib/auth/session-create';
 import { createOTPCode } from '@/lib/auth/otp';
 import { sendOTPEmail } from '@/lib/auth/email';
 import { checkAuthRateLimit } from '@/lib/auth/action-helpers';
