@@ -42,6 +42,7 @@ jobs:
           # bundle. All other secrets are runtime, injected via env_file.
           build-args: |
             NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_ADSENSE_CLIENT_ID=${{ vars.NEXT_PUBLIC_ADSENSE_CLIENT_ID }}
           # Per-product cache tag so multiple products in the same repo
           # don't overwrite each other's layer cache.
           cache-from: type=registry,ref=${{ vars.DOCKER_REPO }}:${{ vars.DOCKER_TAG }}-buildcache
@@ -109,6 +110,8 @@ jobs:
             ONE_DRIVE_OBJECT_ID=${{ secrets.ONE_DRIVE_OBJECT_ID }}
             ONE_DRIVE_OBJECT_TENANT_ID=${{ secrets.ONE_DRIVE_OBJECT_TENANT_ID }}
             ONE_DRIVE_AUTH_URL=${{ secrets.ONE_DRIVE_AUTH_URL }}
+            ONEDRIVE_REDIRECT_URI=${{ secrets.ONEDRIVE_REDIRECT_URI }}
+            NEXT_PUBLIC_ADSENSE_CLIENT_ID=${{ vars.NEXT_PUBLIC_ADSENSE_CLIENT_ID }}
             NODE_ENV=production
             BYPASS_OTP=${{ vars.BYPASS_OTP }}
         with:

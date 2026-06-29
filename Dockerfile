@@ -25,6 +25,9 @@ COPY --from=deps /app/src/generated ./src/generated
 ARG NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 
+ARG NEXT_PUBLIC_ADSENSE_CLIENT_ID
+ENV NEXT_PUBLIC_ADSENSE_CLIENT_ID=$NEXT_PUBLIC_ADSENSE_CLIENT_ID
+
 # Prisma generate already ran in deps; stub URL keeps Next build happy without
 # requiring a real DB connection at image-build time.
 ENV DATABASE_URL="postgresql://stub:stub@localhost:5432/stub"
