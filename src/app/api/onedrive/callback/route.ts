@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(
                 new URL(
                     `/dashboard?error=${encodeURIComponent(errorDescription || error)}`,
-                    request.url
+                    process.env.NEXT_PUBLIC_APP_URL!
                 )
             );
         }
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(
                 new URL(
                     "/dashboard?error=Missing authorization code or state",
-                    request.url
+                    process.env.NEXT_PUBLIC_APP_URL!
                 )
             );
         }
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         const decodedState = parseOneDriveState(state);
         if (!decodedState) {
             return NextResponse.redirect(
-                new URL("/dashboard?error=Invalid state parameter", request.url)
+                new URL("/dashboard?error=Invalid state parameter", process.env.NEXT_PUBLIC_APP_URL!)
             );
         }
 
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
         if (!user) {
             return NextResponse.redirect(
-                new URL("/dashboard?error=User not found", request.url)
+                new URL("/dashboard?error=User not found", process.env.NEXT_PUBLIC_APP_URL!)
             );
         }
 
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(
                 new URL(
                     `/dashboard?error=OneDrive account limit reached. Maximum allowed: ${maxCloudAccounts}`,
-                    request.url
+                    process.env.NEXT_PUBLIC_APP_URL!
                 )
             );
         }
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
                 return NextResponse.redirect(
                     new URL(
                         "/dashboard?error=This OneDrive account is already connected to another user",
-                        request.url
+                        process.env.NEXT_PUBLIC_APP_URL!
                     )
                 );
             }
@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(
                 new URL(
                     `/connections/syncing?workflowId=${encodeURIComponent(triggerWorkflowId)}&accountId=${encodeURIComponent(accountId)}&provider=onedrive`,
-                    request.url
+                    process.env.NEXT_PUBLIC_APP_URL!
                 )
             );
         }
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(
             new URL(
                 `/dashboard?success=${encodeURIComponent(successMessage)}`,
-                request.url
+                process.env.NEXT_PUBLIC_APP_URL!
             )
         );
     } catch (error) {
@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
                 `/dashboard?error=${encodeURIComponent(
                     error instanceof Error ? error.message : "Failed to connect OneDrive account"
                 )}`,
-                request.url
+                process.env.NEXT_PUBLIC_APP_URL!
             )
         );
     }
