@@ -68,12 +68,9 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-8 border-t border-border flex items-center justify-center">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} DriveUnity. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            support@driveunity.ai
           </p>
         </div>
       </div>
