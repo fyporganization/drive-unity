@@ -1,10 +1,10 @@
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
-const BRAND_PRIMARY = '#667eea';
-const BRAND_PRIMARY_DARK = '#5568d3';
+const BRAND_PRIMARY = '#2563eb';
+const BRAND_PRIMARY_DARK = '#1d4ed8';
 const TEXT_DARK = '#1a1a2e';
 const TEXT_MUTED = '#6b7280';
-const BG_SOFT = '#f8f9ff';
+const BG_SOFT = '#eff6ff';
 const BORDER_SOFT = '#e5e7eb';
 
 interface BrevoEmailPayload {

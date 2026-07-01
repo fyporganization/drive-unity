@@ -19,7 +19,7 @@
 
 /* Private area specific overrides */
 .private-layout {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
 }
 
 .private-layout h1,
@@ -28,5 +28,5 @@
 .private-layout h4,
 .private-layout h5,
 .private-layout h6 {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
 }

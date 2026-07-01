@@ -1013,7 +1013,7 @@ function MiniChart({
                 <YAxis hide />
                 <Bar
                   dataKey="count"
-                  fill="hsl(252, 85%, 60%)"
+                  fill="hsl(221, 83%, 53%)"
                   radius={[4, 4, 0, 0]}
                 />
                 <ChartTooltip

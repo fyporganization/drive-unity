@@ -524,7 +524,7 @@ function GrowthTimelineCard({ growthTimeline }: Readonly<{ growthTimeline: Analy
                 <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} width={30} />
                 <Tooltip content={GrowthTooltip} />
-                <Bar dataKey="count" fill="hsl(252, 85%, 60%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="hsl(221, 83%, 53%)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

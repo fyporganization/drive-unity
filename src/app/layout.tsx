@@ -1,4 +1,3 @@
-import { ColorSchemeScript } from '@mantine/core';
 import Script from 'next/script';
 import { AppProviders } from './providers/AppProvider';
 import { Toaster } from "@/components/ui/toaster";
@@ -32,7 +31,7 @@ export const viewport = {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1,
-    themeColor: '#667eea',
+    themeColor: '#2563eb',
 };
 
 export default function RootLayout({children}: {
@@ -41,7 +40,6 @@ export default function RootLayout({children}: {
     return (
         <html lang="en" suppressHydrationWarning>
         <head>
-            <ColorSchemeScript />
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             {ADSENSE_CLIENT_ID && (

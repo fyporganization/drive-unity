@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 20% 8%;
 
-    --primary: 252 85% 60%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 15% 95%;
@@ -25,30 +25,30 @@
     --muted: 240 12% 94%;
     --muted-foreground: 240 8% 46%;
 
-    --accent: 252 60% 95%;
-    --accent-foreground: 252 85% 40%;
+    --accent: 192 60% 95%;
+    --accent-foreground: 192 91% 30%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 240 12% 91%;
     --input: 240 12% 91%;
-    --ring: 252 85% 60%;
+    --ring: 221 83% 53%;
 
     --radius: 0.75rem;
 
     /* DriveUnity custom tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(252 85% 60%), hsl(280 80% 55%));
-    --gradient-hero: linear-gradient(135deg, hsl(252 85% 60%) 0%, hsl(280 80% 55%) 50%, hsl(320 70% 60%) 100%);
-    --gradient-surface: linear-gradient(180deg, hsl(252 30% 97%) 0%, hsl(240 20% 99%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(192 91% 36%));
+    --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(205 87% 45%) 50%, hsl(192 91% 36%) 100%);
+    --gradient-surface: linear-gradient(180deg, hsl(221 30% 97%) 0%, hsl(240 20% 99%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(0 0% 100% / 0.4));
-    --gradient-cta: linear-gradient(135deg, hsl(252 85% 60%), hsl(280 75% 50%));
-    --gradient-text: linear-gradient(135deg, hsl(252 85% 60%), hsl(320 70% 60%));
+    --gradient-cta: linear-gradient(135deg, hsl(221 83% 53%), hsl(192 91% 36%));
+    --gradient-text: linear-gradient(135deg, hsl(221 83% 53%), hsl(192 91% 36%));
 
-    --shadow-soft: 0 4px 24px -4px hsl(252 85% 60% / 0.1);
-    --shadow-card: 0 8px 32px -8px hsl(252 85% 60% / 0.12);
-    --shadow-elevated: 0 20px 60px -12px hsl(252 85% 60% / 0.2);
-    --shadow-glow: 0 0 40px -8px hsl(252 85% 60% / 0.3);
+    --shadow-soft: 0 4px 24px -4px hsl(221 83% 53% / 0.1);
+    --shadow-card: 0 8px 32px -8px hsl(221 83% 53% / 0.12);
+    --shadow-elevated: 0 20px 60px -12px hsl(221 83% 53% / 0.2);
+    --shadow-glow: 0 0 40px -8px hsl(221 83% 53% / 0.3);
 
     --glass-bg: hsl(0 0% 100% / 0.7);
     --glass-border: hsl(0 0% 100% / 0.5);
@@ -56,12 +56,12 @@
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 252 85% 60%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 252 60% 95%;
-    --sidebar-accent-foreground: 252 85% 40%;
+    --sidebar-accent: 192 60% 95%;
+    --sidebar-accent-foreground: 192 91% 30%;
     --sidebar-border: 240 12% 91%;
-    --sidebar-ring: 252 85% 60%;
+    --sidebar-ring: 221 83% 53%;
   }
 
   .dark {
@@ -74,7 +74,7 @@
     --popover: 240 20% 7%;
     --popover-foreground: 240 10% 95%;
 
-    --primary: 252 85% 65%;
+    --primary: 221 83% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 15% 12%;
@@ -83,24 +83,24 @@
     --muted: 240 12% 14%;
     --muted-foreground: 240 8% 55%;
 
-    --accent: 252 40% 15%;
-    --accent-foreground: 252 85% 75%;
+    --accent: 192 40% 15%;
+    --accent-foreground: 192 85% 70%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 240 12% 15%;
     --input: 240 12% 15%;
-    --ring: 252 85% 65%;
+    --ring: 221 83% 60%;
 
     --sidebar-background: 240 20% 6%;
     --sidebar-foreground: 240 10% 90%;
-    --sidebar-primary: 252 85% 65%;
+    --sidebar-primary: 221 83% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 252 40% 12%;
-    --sidebar-accent-foreground: 252 85% 75%;
+    --sidebar-accent: 192 40% 12%;
+    --sidebar-accent-foreground: 192 85% 70%;
     --sidebar-border: 240 12% 15%;
-    --sidebar-ring: 252 85% 65%;
+    --sidebar-ring: 221 83% 60%;
   }
 
   * {
@@ -113,11 +113,11 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     overflow-x: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'Poppins', system-ui, sans-serif;
     @apply font-display;
   }
 }
@@ -171,18 +171,18 @@
   }
 
   .grid-pattern {
-    background-image: 
-      linear-gradient(hsl(252 85% 60% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(252 85% 60% / 0.03) 1px, transparent 1px);
+    background-image:
+      linear-gradient(hsl(221 83% 53% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(221 83% 53% / 0.03) 1px, transparent 1px);
     background-size: 60px 60px;
   }
 
   .font-display {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'Poppins', system-ui, sans-serif;
   }
 
   .font-body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Poppins', system-ui, sans-serif;
   }
 
   /* Custom keyframes */
@@ -240,35 +240,6 @@
   .animate-slide-up {
     animation: slide-up 0.6s ease-out;
   }
-}
-
-/* Mantine overrides */
-.mantine-Button-root {
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-weight: 500;
-}
-
-.mantine-NavLink-root {
-  border-radius: 0.75rem !important;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-weight: 500;
-}
-
-.mantine-NavLink-root:hover {
-  transform: translateX(4px);
-}
-
-.mantine-Badge-root {
-  border-radius: 9999px !important;
-  font-weight: 500;
-}
-
-.mantine-Menu-dropdown {
-  border-radius: 0.75rem !important;
-}
-
-.mantine-Drawer-content {
-  border-radius: 0.75rem 0 0 0.75rem !important;
 }
 
 @media (max-width: 768px) {
