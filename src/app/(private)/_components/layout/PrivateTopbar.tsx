@@ -28,7 +28,7 @@ import { useSession } from "@/app/providers/SessionProvider";
 import { useConnectionStatus } from "@/app/(private)/hooks/useConnectionStatus";
 
 export default function PrivateTopbar() {
-  const { user, logout } = useSession();
+  const { user, loading, logout } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -121,6 +121,12 @@ export default function PrivateTopbar() {
         )}
 
         {/* User dropdown */}
+        {loading || !user ? (
+          <div className="flex items-center gap-2 px-2 py-1.5">
+            <div className="w-7 h-7 rounded-full bg-muted animate-pulse" />
+            <div className="w-20 h-4 rounded bg-muted animate-pulse" />
+          </div>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted/60 transition-colors duration-150">
@@ -130,7 +136,7 @@ export default function PrivateTopbar() {
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium text-foreground">
-                {user?.name}
+                {user.name}
               </span>
               <ChevronDown className="w-3 h-3 text-muted-foreground" />
             </button>
@@ -188,6 +194,7 @@ export default function PrivateTopbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </div>
 
       {/* Mobile menu */}
