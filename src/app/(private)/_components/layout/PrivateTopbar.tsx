@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useSession } from "@/app/providers/SessionProvider";
 import { useConnectionStatus } from "@/app/(private)/hooks/useConnectionStatus";
 
@@ -100,6 +101,8 @@ export default function PrivateTopbar() {
 
       {/* Desktop right */}
       <div className="hidden md:flex items-center gap-3">
+        <ThemeToggle />
+
         {/* Connection Status */}
         {!statusLoading && (
           <motion.div
@@ -211,18 +214,21 @@ export default function PrivateTopbar() {
           >
             <SheetTitle className="sr-only">User Menu</SheetTitle>
             <div className="p-5 border-b border-border/50">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-display font-semibold text-foreground text-sm">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Avatar className="w-10 h-10">
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="font-display font-semibold text-foreground text-sm truncate">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
                 </div>
+                <ThemeToggle />
               </div>
             </div>
             <div className="p-3 space-y-1">

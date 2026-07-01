@@ -47,13 +47,21 @@ function statusSubtitle(statusLoading: boolean, isConnected: boolean): string {
   return isConnected ? "Connected & synced" : "Setup required";
 }
 
-const navItems = [
+interface NavItem {
+  icon: typeof LayoutDashboard;
+  label: string;
+  path: string;
+  href?: string;
+  requiresDrive: boolean;
+}
+
+const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", requiresDrive: true },
   { icon: Link2, label: "Connections", path: "/connections", requiresDrive: false },
   { icon: FolderOpen, label: "File Management", path: "/files", requiresDrive: true },
   { icon: Search, label: "AI Search", path: "/search", requiresDrive: true },
   { icon: BarChart3, label: "Analytics", path: "/analytics", requiresDrive: true },
-  { icon: Settings, label: "Settings", path: "/settings/paddlePayment", requiresDrive: false },
+  { icon: Settings, label: "Settings", path: "/settings", href: "/settings?tab=profile", requiresDrive: false },
 ];
 
 interface PrivateSidebarProps {
@@ -65,12 +73,12 @@ export default function PrivateSidebar({ collapsed }: PrivateSidebarProps) {
   const router = useRouter();
   const { isConnected, statusLoading } = useConnectionStatus();
 
-  const handleNav = (item: (typeof navItems)[0]) => {
+  const handleNav = (item: NavItem) => {
     if (item.requiresDrive && !isConnected) {
       router.push("/connections");
       return;
     }
-    router.push(item.path);
+    router.push(item.href ?? item.path);
   };
 
   const isActive = (path: string) =>

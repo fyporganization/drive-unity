@@ -12,35 +12,36 @@ interface SettingsNavItem {
 }
 
 const settingsNavItems: SettingsNavItem[] = [
+  
+  {
+    label: 'Profile Settings',
+    icon: User,
+    href: '/settings',
+    tab: 'profile',
+  },
+  {
+    label: 'Notifications',
+    icon: Bell,
+    href: '/settings',
+    tab: 'notifications',
+  },
   {
     label: 'Subscription & Billing',
     icon: CreditCard,
     href: '/settings/paddlePayment',
   },
-  // {
-  //   label: 'Profile Settings',
-  //   icon: User,
-  //   href: '/settings',
-  //   tab: 'profile',
-  // },
-  // {
-  //   label: 'Notifications',
-  //   icon: Bell,
-  //   href: '/settings',
-  //   tab: 'notifications',
-  // },
-  // {
-  //   label: 'Privacy & Security',
-  //   icon: Shield,
-  //   href: '/settings',
-  //   tab: 'privacy',
-  // },
-  // {
-  //   label: 'General Settings',
-  //   icon: Settings,
-  //   href: '/settings',
-  //   tab: 'general',
-  // },
+  {
+    label: 'Privacy & Security',
+    icon: Shield,
+    href: '/settings',
+    tab: 'privacy',
+  },
+  {
+    label: 'General Settings',
+    icon: Settings,
+    href: '/settings',
+    tab: 'general',
+  },
 ];
 
 export const SettingsSidebar = () => {
